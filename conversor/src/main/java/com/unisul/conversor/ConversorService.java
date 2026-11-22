@@ -81,8 +81,75 @@ public class ConversorService {
 
     // Recebe o valor em Octal (String) e retorna: [Decimal, Binário, Hexadecimal]
     public String[] converterDeOctal(String valorOctal) {
-        // TODO: A equipe deve implementar a conversão de Octal para as outras bases aqui
-        return new String[]{"", "", ""};
+
+        // tira espaços do começo e do fim
+        if (valorOctal != null) {
+            valorOctal = valorOctal.trim(); 
+        }
+        //passo 1: validaçao
+        if (valorOctal == null || valorOctal.isEmpty()) {
+            return new String []{"", "", ""};
+           
+        }
+        //limite de 20 digitos pra evitar overflow
+        if (valorOctal.length() > 20) {
+            return new String[]{"Octal muito grande", "Octal muito grande", "Octal muito grande"};
+        }
+
+        // no octal só existem os dígitos de 0 a 7 
+        for (int i = 0; i < valorOctal.length(); i++) {
+            char digito = valorOctal.charAt(i);
+            if (digito < '0' || digito > '7') {
+                return new String[]{"Octal inserido é inválido", "Octal inserido é inválido", "Octal inserido é inválido"};
+            }
+        }
+
+        // passo 2: Octal > Decimal (método posicional / polinômio)
+        // lendo da esquerda para a direita: multiplica o acumulado por 8 e soma o dígito.
+        long decimal = 0;
+        for (int i = 0; i < valorOctal.length(); i++) {
+            int digito = valorOctal.charAt(i) - '0'; // '7' - '0' = 7
+            decimal = decimal * 8 + digito;
+        }
+
+        // passo 3: octal -> binário (agrupamento de bits)
+        // 8 = 2³, então cada dígito octal vira exatamente 3 bits.
+        // ex.: 175(8) -> 001 111 101 -> 1111101(2)
+        String[] tabela = {"000", "001", "010", "011", "100", "101", "110", "111"};
+        String binario = "";
+        for (int i = 0; i < valorOctal.length(); i++) {
+            int digito = valorOctal.charAt(i) - '0';
+            binario = binario + tabela[digito];
+        }
+        // remove zeros a esquerda, mantendo pelo menos um dígito
+        int primeiroUm = 0;
+        while (primeiroUm < binario.length() - 1 && binario.charAt(primeiroUm) == '0') {
+            primeiroUm++;
+        }
+        binario = binario.substring(primeiroUm);
+
+        // passo 4: decimal > hexadecimal (divisões sucessivas por 16)
+        // os restos, lidos de trás para frente formam o resultado.
+        // ex.: 125 / 16 = 7 resto 13 (D); 7 / 16 = 0 resto 7 -> "7D"
+        String hexadecimal = "";
+        long numero = decimal;
+
+        if (numero == 0) {
+            hexadecimal = "0";
+        } else {
+            while (numero > 0) {
+                long resto = numero % 16;
+                if (resto < 10) {
+                    hexadecimal = resto + hexadecimal;
+                } else {
+                    hexadecimal = (char) ('A' + resto - 10) + hexadecimal;
+                }
+                numero = numero / 16;
+            }
+        }
+
+        // retorna na ordem esperada pelo controller, podendo ser decimal, binário, hexadecimal
+        return new String[]{String.valueOf(decimal), binario, hexadecimal};
     }
 
     // Recebe o valor em Hexadecimal (String) e retorna: [Decimal, Binário, Octal]
