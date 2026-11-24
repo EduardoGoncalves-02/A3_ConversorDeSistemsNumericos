@@ -4,17 +4,61 @@ public class ConversorService {
 
     // Recebe o valor em Decimal (String) e retorna um array com: [Binário, Octal, Hexadecimal]
     public String[] converterDeDecimal(String valorDecimal) {
-        // TODO: A equipe deve implementar a conversão de Decimal para as outras bases aqui
-        String binario = ""; 
+        long entradaConvertidaNumero;
+        String binario = "";
         String octal = "";
         String hexadecimal = "";
+
+        //Verifica se o campo está vazio
+        if (valorDecimal == null || valorDecimal.isEmpty()) {
+            return new String[]{"", "", ""};
+        }
+
+        try {
+            //tenta converter o texto recebido para long.
+            entradaConvertidaNumero = Long.parseLong(valorDecimal);
+            if(entradaConvertidaNumero < 0){
+            return new String[]{"Decimal Inserido é inválido", "Decimal Inserido é inválido", "Decimal Inserido é inválido"};
+            }
+        } catch (NumberFormatException e) {
+            return new String[]{"Decimal Inserido é inválido", "Decimal Inserido é inválido", "Decimal Inserido é inválido"};
+        }
         
-        return new String[]{"teste_bin", "teste_oct", "teste_hexa"};
-    }
+        //Se o valor for 0, todos são 0
+        if(entradaConvertidaNumero == 0){
+        return new String[]{"0","0","0"};
+        }
+        
+
+        //Decimal para Binario
+        long numero = entradaConvertidaNumero;
+        while(numero > 0){
+          binario = (numero % 2) + binario;  
+          numero /= 2;}
+            
+        //Decimal para Octal
+        numero = entradaConvertidaNumero;
+        while(numero > 0){
+          octal = (numero % 8) + octal;  
+          numero /= 8;}
+        
+        //Decimal para Hexadecimal
+        numero = entradaConvertidaNumero;
+        while(numero > 0){
+            long resto = numero % 16;
+            if(resto < 10){
+             hexadecimal = resto + hexadecimal;
+        }else{
+            hexadecimal = (char) ('A' + resto - 10) + hexadecimal;
+            }
+        numero = numero / 16;
+        }
+          return new String[]{binario,octal,hexadecimal};
+        }
 
     // Recebe o valor em Binário (String) e retorna: [Decimal, Octal, Hexadecimal]
     public String[] converterDeBinario(String valorBinario) {
-        // TODO: A equipe deve implementar a conversão de Binário para as outras bases aqui
+
         // Verifica se o campo está vazio
         if (valorBinario == null || valorBinario.isEmpty()) {
             return new String[]{"", "", ""};
@@ -84,12 +128,12 @@ public class ConversorService {
 
         // tira espaços do começo e do fim
         if (valorOctal != null) {
-            valorOctal = valorOctal.trim(); 
+            valorOctal = valorOctal.trim();
         }
         //passo 1: validaçao
         if (valorOctal == null || valorOctal.isEmpty()) {
-            return new String []{"", "", ""};
-           
+            return new String[]{"", "", ""};
+
         }
         //limite de 20 digitos pra evitar overflow
         if (valorOctal.length() > 20) {
@@ -104,7 +148,7 @@ public class ConversorService {
             }
         }
 
-        // passo 2: Octal > Decimal (método posicional / polinômio)
+        // passo 2: Octal -> Decimal (método posicional / polinômio)
         // lendo da esquerda para a direita: multiplica o acumulado por 8 e soma o dígito.
         long decimal = 0;
         for (int i = 0; i < valorOctal.length(); i++) {
@@ -154,7 +198,17 @@ public class ConversorService {
 
     // Recebe o valor em Hexadecimal (String) e retorna: [Decimal, Binário, Octal]
     public String[] converterDeHexadecimal(String valorHex) {
-        // TODO: A equipe deve implementar a conversão de Hexadecimal para as outras bases aqui
-        return new String[]{"", "", ""};
+        
+        String digitosHex = "0123456789ABCDEF";
+        String decimal = "";
+        String binario = "";
+        String octal = "";
+        
+        
+        //Hexadecimal para decimal
+        
+        
+        
+        return new String[]{decimal, binario, octal};
     }
 }
