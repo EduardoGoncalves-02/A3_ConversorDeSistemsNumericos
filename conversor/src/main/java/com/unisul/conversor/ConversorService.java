@@ -17,44 +17,45 @@ public class ConversorService {
         try {
             //tenta converter o texto recebido para long.
             entradaConvertidaNumero = Long.parseLong(valorDecimal);
-            if(entradaConvertidaNumero < 0){
-            return new String[]{"Decimal Inserido é inválido", "Decimal Inserido é inválido", "Decimal Inserido é inválido"};
+            if (entradaConvertidaNumero < 0) {
+                return new String[]{"Decimal Inserido é inválido", "Decimal Inserido é inválido", "Decimal Inserido é inválido"};
             }
         } catch (NumberFormatException e) {
             return new String[]{"Decimal Inserido é inválido", "Decimal Inserido é inválido", "Decimal Inserido é inválido"};
         }
-        
+
         //Se o valor for 0, todos são 0
-        if(entradaConvertidaNumero == 0){
-        return new String[]{"0","0","0"};
+        if (entradaConvertidaNumero == 0) {
+            return new String[]{"0", "0", "0"};
         }
-        
 
         //Decimal para Binario
         long numero = entradaConvertidaNumero;
-        while(numero > 0){
-          binario = (numero % 2) + binario;  
-          numero /= 2;}
-            
+        while (numero > 0) {
+            binario = (numero % 2) + binario;
+            numero /= 2;
+        }
+
         //Decimal para Octal
         numero = entradaConvertidaNumero;
-        while(numero > 0){
-          octal = (numero % 8) + octal;  
-          numero /= 8;}
-        
+        while (numero > 0) {
+            octal = (numero % 8) + octal;
+            numero /= 8;
+        }
+
         //Decimal para Hexadecimal
         numero = entradaConvertidaNumero;
-        while(numero > 0){
+        while (numero > 0) {
             long resto = numero % 16;
-            if(resto < 10){
-             hexadecimal = resto + hexadecimal;
-        }else{
-            hexadecimal = (char) ('A' + resto - 10) + hexadecimal;
+            if (resto < 10) {
+                hexadecimal = resto + hexadecimal;
+            } else {
+                hexadecimal = (char) ('A' + resto - 10) + hexadecimal;
             }
-        numero = numero / 16;
+            numero = numero / 16;
         }
-          return new String[]{binario,octal,hexadecimal};
-        }
+        return new String[]{binario, octal, hexadecimal};
+    }
 
     // Recebe o valor em Binário (String) e retorna: [Decimal, Octal, Hexadecimal]
     public String[] converterDeBinario(String valorBinario) {
@@ -198,16 +199,49 @@ public class ConversorService {
 
     // Recebe o valor em Hexadecimal (String) e retorna: [Decimal, Binário, Octal]
     public String[] converterDeHexadecimal(String valorHex) {
+
+        String digitosValidos = "0123456789ABCDEF";
+        String valorHexMaiusculo = valorHex.trim().toUpperCase();
+
+        //Hexadecimal para decimal + verificação se o valor inserido está nos digitos válidos.
+        long valorParaDecimal = 0;
+
+        for (int i = 0; i < valorHexMaiusculo.length(); i++) {
+            char digito = valorHexMaiusculo.charAt(i);
+            int valorDigito = digitosValidos.indexOf(digito);
+
+            if (valorDigito == -1) {
+                return new String[]{"Hexadecimal inserido é inválido", "Hexadecimal inserido é inválido", "Hexadecimal inserido é inválido"};
+            }
+
+            valorParaDecimal = valorParaDecimal * 16 + valorDigito;
+        }
         
-        String digitosHex = "0123456789ABCDEF";
-        String decimal = "";
+        //Gera as Strings para return. obs(a decimal há de ser de forma diferente pq no cálculo dela não ocorre a conversão automática.
         String binario = "";
         String octal = "";
+        String decimal = String.valueOf(valorParaDecimal);
         
+        //Se o valor for 0, todos serão 0
+        if(valorParaDecimal == 0){
+            return new String[]{"0","0","0"};
+        }
         
-        //Hexadecimal para decimal
+        //Utilizando o valor decimal adquirido para fazer a conversão para octal.
         
+        long numero = valorParaDecimal;
+        while(numero > 0){
+            octal = (numero % 8) + octal;
+            numero /= 8;
+        }
         
+        //Utilizando o valor decimal adquirido para fazer a conversão para binário.
+        
+        numero = valorParaDecimal;
+        while(numero > 0){
+        binario = (numero % 2) + binario;
+        numero /= 2;
+        }
         
         return new String[]{decimal, binario, octal};
     }
